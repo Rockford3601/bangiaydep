@@ -1,38 +1,55 @@
+<?php
+// Define SECURE_CHECK constant to prevent direct access to component files
+define('SECURE_CHECK', true);
+
+// Load Cấu hình hệ thống
+require_once __DIR__ . 'config/app.php';
+
+// Xử lý tham số 'page' từ URL
+$page_key = isset($_GET['page']) ? trim($_GET['page']) : 'home';
+
+// Kiểm tra trang có thuộc Whitelist không
+if (array_key_exists($page_key, $pages)) {
+    $current_page = $pages[$page_key];
+} else {
+    http_response_code(404);
+    $current_page = [
+        'title' => '404 Not Found | Tuyển Chọn',
+        'css'   => 'home.css',
+        'file'  => 'pages/404.php'
+    ];
+}
+?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="layouts1.css">
-    <title>Trang chủ - Thu nghiem layouts</title>
-    <link rel="icon" type="image/x-icon" href="anh/logodai_nen_tran.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><?php echo htmlspecialchars($current_page['title']); ?></title>
+  <meta name="description" content="Trang web giày Nike theo phong cách Việt Nam." />
+  
+  <!-- CSS Dùng chung -->
+  <link rel="stylesheet" href="assets/css/global.css" />
+  
+  <!-- CSS Riêng cho trang đang xem -->
+  <link rel="stylesheet" href="assets/css/<?php echo $current_page['css']; ?>" />
 </head>
 <body>
-    <div class="khung_background">
-        
-        <!-- 1. Gọi Header -->
-        <?php include 'components/header.php'; ?>
+  <div class="page-shell">
+    
+    <!-- 1. Gọi Topbar -->
+         <?php include __DIR__ . '/components/topbar.php'; ?>
 
-        <!-- 2. Gọi Navbar -->
-        <?php include 'components/navbar.php'; ?>
 
-        <!-- 3. Khung thân (Sidebar + Nội dung động) -->
-        <div class="khung_than">
-            
-            <!-- Gọi Sidebar -->
-            <?php include 'components/sidebar.php'; ?>
+    <!-- 2. Gọi Main Header -->
+    <?php include __DIR__ . '/components/header.php'; ?>
 
-            <!-- Khu vực chứa nội dung riêng của từng trang -->
-            <main class="khung_noidung">
-                <h2>NỘI DUNG TRANG CHỦ</h2>
-                <!-- Sau này bạn có thể dùng include động ở đây (VD: include $page_content;) -->
-            </main>
+    <!-- 3. Tải nội dung động của Trang -->
+    <?php include __DIR__ . '/' . $current_page['file']; ?>
 
-        </div>
+    <!-- 4. Gọi Footer -->
+    <?php include __DIR__ . '/components/footer.php'; ?>
 
-        <!-- 4. Gọi Footer -->
-        <?php include 'components/footer.php'; ?>
-
-    </div>
+  </div>
 </body>
 </html>
